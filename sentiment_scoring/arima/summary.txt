@@ -1,0 +1,6 @@
+Bitcoin: p=1; Dogecoin: p=1; Litecoin: p=1; Ethereum: p=1
+Bitcoin: d=1; Dogecoin: d=1; Litecoin: d=1; Ethereum: d=1
+Bitcoin: q=2; Dogecoin: q=5+; Litecoin: q=4; Ethereum: q=5+
+
+可以看出Bitcoin和Litecoin都比较适合arima模型，分别为ARIMA(1, 1, 2)和ARIMA(1, 1, 4)
+Dogecoin和Ethereum不适合arima模型，其参数q都远大于5

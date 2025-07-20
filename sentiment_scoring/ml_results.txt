@@ -1,0 +1,63 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LR model pipeline without stemming
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Best params are : {'clf__C': 1.0, 'clf__penalty': 'l1', 'clf__solver': 'liblinear', 'prep__Stemming': True, 'sel__k': 'all', 'sel__score_func': <function f_classif at 0x000001C6CEE0A1F0>, 'vec__binary': True, 'vec__ngram_range': (1, 3)}
+Best training f1_macro: 0.619
+Test Data classification report
+              precision    recall  f1-score   support
+
+    negative       0.67      0.47      0.55       205
+     neutral       0.73      0.84      0.78       713
+    positive       0.68      0.60      0.63       378
+
+    accuracy                           0.71      1296
+   macro avg       0.69      0.63      0.66      1296
+weighted avg       0.70      0.71      0.70      1296
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LR Model with Stemming
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Best params are : {'clf__C': 1.0, 'clf__penalty': 'l1', 'clf__solver': 'saga', 'sel__k': 'all', 'sel__score_func': <function f_classif at 0x000001C6CEE0A1F0>, 'vec__binary': True, 'vec__ngram_range': (1, 3)}
+Best training f1_macro: 0.633
+Test Data classification report
+              precision    recall  f1-score   support
+
+    negative       0.63      0.50      0.55       205
+     neutral       0.74      0.81      0.78       713
+    positive       0.66      0.61      0.63       378
+
+    accuracy                           0.71      1296
+   macro avg       0.68      0.64      0.66      1296
+weighted avg       0.70      0.71      0.70      1296
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SVC Model without Stemming
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Best params are : {'clf__C': 0.1, 'clf__gamma': 'scale', 'clf__kernel': 'linear', 'sel__k': 'all', 'sel__score_func': <function f_classif at 0x000001C6CEE0A1F0>, 'vec__binary': True, 'vec__ngram_range': (1, 2)}
+Best training f1_macro: 0.608
+Test Data classification report
+              precision    recall  f1-score   support
+
+    negative       0.70      0.44      0.54       205
+     neutral       0.72      0.84      0.78       713
+    positive       0.66      0.59      0.62       378
+
+    accuracy                           0.70      1296
+   macro avg       0.69      0.62      0.65      1296
+weighted avg       0.70      0.70      0.69      1296
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SVC model with Stemming
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Best params are : {'clf__C': 1.0, 'clf__gamma': 'scale', 'clf__kernel': 'linear', 'sel__k': 'all', 'sel__score_func': <function f_classif at 0x000001C6CEE0A1F0>, 'vec__binary': True, 'vec__ngram_range': (1, 2)}
+Best training f1_macro: 0.625
+Test Data classification report
+              precision    recall  f1-score   support
+
+    negative       0.66      0.54      0.59       205
+     neutral       0.74      0.81      0.77       713
+    positive       0.66      0.63      0.64       378
+
+    accuracy                           0.71      1296
+   macro avg       0.69      0.66      0.67      1296
+weighted avg       0.71      0.71      0.71      1296
+
+
+Process finished with exit code 0
