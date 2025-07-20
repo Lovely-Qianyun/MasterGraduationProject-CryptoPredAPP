@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Indicators Correlation Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/macro-correlation.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-0">Macro Indicators and Cryptocurrency Correlation Analysis</h2>
+            <p class="mb-0">Display correlation coefficients between macro indicators and cryptocurrency price movements</p>
+        </div>
+        <a href="/" class="btn btn-light">
+            <i class="bi bi-house-door"></i> Back to Home
+        </a>
+    </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Time Range:</label>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" data-period="1y">1 Year</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="3y">3 Years</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="5y">5 Years</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="all">All Data</button>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="mb-3">Correlation Matrix</h4>
+                    <div id="correlation-matrix" class="matrix-grid">
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Detailed Indicator Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 id="indicator-title">Select an indicator to view details</h6>
+                                <p id="indicator-description" class="text-muted">Click on a cell in the matrix above to view details</p>
+                                <div id="impact-analysis" class="mt-3 d-none">
+                                    <p>When <span id="indicator-name" class="fw-bold">Indicator</span> changes by 1%:</p>
+                                    <p>Cryptocurrency <span id="crypto-name" class="fw-bold">Name</span> price average change:
+                                        <span id="price-change" class="fw-bold">0.0%</span>
+                                    </p>
+                                    <p class="fst-italic"><small>Based on historical data analysis</small></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="correlation-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-muted">
+                <small>Data Sources: Federal Reserve, U.S. Treasury, CBOE, S&P, Kaggle, FRED | Data Updated: <span id="data-update-time"></span></small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/macro-correlation.js') }}"></script>
+</body>
+</html>

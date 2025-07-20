@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Sentiment Analysis Monitor - Cryptocurrency Analytics Platform{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .sentiment-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .control-panel {
+        background: #f0f0f0;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .metric-card {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+        transition: transform 0.3s;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .charts {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .progress-container {
+        margin: 20px 0;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
+
+    .logs {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        height: 200px;
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
+    }
+
+    .log-entry {
+        margin: 5px 0;
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+        font-family: monospace;
+    }
+
+    .log-entry:nth-child(odd) {
+        background-color: #f0f0f0;
+    }
+
+    .sentiment-btn {
+        padding: 8px 16px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .sentiment-btn:hover {
+        background-color: #45a049;
+    }
+
+    .sentiment-btn:disabled {
+        background: #cccccc;
+        cursor: not-allowed;
+    }
+
+    .form-group {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group label {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+    }
+
+    .form-group select,
+    .form-group input {
+        padding: 6px;
+        width: 200px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .sentiment-container h1,
+    .sentiment-container h2,
+    .sentiment-container h3 {
+        color: #333;
+    }
+
+    .metrics-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .metric-item {
+        background: #f0f0f0;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 5px;
+        min-width: 150px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="sentiment-container">
+        <div class="header">
+            <h1>Cryptocurrency Prediction Model Monitoring Dashboard - Sentiment Analysis</h1>
+            <div id="model-info" style="font-style: italic;">Loading model information...</div>
+        </div>
+
+        <div class="control-panel">
+            <h3>Training Controls</h3>
+            <div class="form-group">
+                <label for="crypto-type">Cryptocurrency:</label>
+                <select id="crypto-type">
+                    <option value="Bitcoin">Bitcoin</option>
+                    <option value="Dogecoin">Dogecoin</option>
+                    <option value="Ethereum">Ethereum</option>
+                    <option value="Litecoin">Litecoin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sentiment-type">Sentiment Data Type:</label>
+                <select id="sentiment-type">
+                    <option value="None">None</option>
+                    <option value="svc">SVC Only</option>
+                    <option value="trans">Transformer Only</option>
+                    <option value="both">Both</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="model-type">Model Type:</label>
+                <select id="model-type">
+                    <option value="LSTM">LSTM</option>
+                    <option value="BD LSTM">BD LSTM</option>
+                    <option value="ED LSTM">ED LSTM</option>
+                    <option value="CNN">CNN</option>
+                    <option value="Convolutional LSTM">Convolutional LSTM</option>
+                    <option value="Transformer">Transformer</option>
+                    <option value="MLP">MLP</option>
+                    <option value="ARIMA">ARIMA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="epochs">Training Epochs:</label>
+                <input type="number" id="epochs" value="10" min="1" max="100">
+                <small id="arima-note" style="margin-left:10px; color: #666; display: none;">Ignored for ARIMA</small>
+            </div>
+            <button id="start-training" class="sentiment-btn">Start Training</button>
+            <button id="check-status" class="sentiment-btn">Check Status</button>
+            <div id="training-status" style="margin-top: 10px; color: #666;"></div>
+        </div>
+
+        <div class="metrics">
+            <div class="metric-card">
+                <h3>Current Epoch</h3>
+                <p id="current-epoch" style="font-size: 24px; margin: 10px 0;">--</p>
+            </div>
+            <div class="metric-card">
+                <h3>Training Loss</h3>
+                <p id="loss" style="font-size: 24px; margin: 10px 0;">--</p>
+            </div>
+            <div class="metric-card">
+                <h3>Validation Loss</h3>
+                <p id="val-loss" style="font-size: 24px; margin: 10px 0;">--</p>
+            </div>
+            <div class="metric-card">
+                <h3>MAE</h3>
+                <p id="accuracy" style="font-size: 24px; margin: 10px 0;">--</p>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <h3>Training Progress</h3>
+            <progress id="progress" value="0" max="100" style="width: 100%; height: 20px;"></progress>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                <span id="progress-text">0%</span>
+                <span id="epoch-info">0/0 epochs</span>
+            </div>
+        </div>
+
+        <div class="charts">
+            <div
+                style="background-color: white; padding: 10px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+                <h3>Loss Curves</h3>
+                <canvas id="loss-chart"></canvas>
+            </div>
+            <div
+                style="background-color: white; padding: 10px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+                <h3>MAE Curves</h3>
+                <canvas id="accuracy-chart"></canvas>
+            </div>
+        </div>
+
+        <div>
+            <h3>Additional Metrics</h3>
+            <div id="metrics-container" class="metrics-container"></div>
+        </div>
+
+        <div>
+            <h3>Training Logs</h3>
+            <div class="logs" id="logs"></div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        const lossCtx = document.getElementById('loss-chart').getContext('2d');
+        const accuracyCtx = document.getElementById('accuracy-chart').getContext('2d');
+
+        const lossChart = new Chart(lossCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'Training Loss', data: [], borderColor: 'red', fill: false, tension: 0.1 },
+                    { label: 'Validation Loss', data: [], borderColor: 'orange', fill: false, tension: 0.1 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: 'Loss Variation Curve' },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Epoch' } },
+                    y: { title: { display: true, text: 'Loss Value (MSE)' } }
+                }
+            }
+        });
+
+        const accuracyChart = new Chart(accuracyCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'Training MAE', data: [], borderColor: 'blue', fill: false, tension: 0.1 },
+                    { label: 'Validation MAE', data: [], borderColor: 'green', fill: false, tension: 0.1 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: 'MAE Variation Curve' },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Epoch' } },
+                    y: { title: { display: true, text: 'MAE Value' } }
+                }
+            }
+        });
+
+        document.getElementById('model-type').addEventListener('change', function () {
+            const isArima = this.value === 'ARIMA';
+            document.getElementById('arima-note').style.display = isArima ? 'inline' : 'none';
+            document.getElementById('epochs').disabled = isArima;
+        });
+
+        document.getElementById('start-training').addEventListener('click', function () {
+            const cryptoType = document.getElementById('crypto-type').value;
+            const sentimentType = document.getElementById('sentiment-type').value;
+            const modelType = document.getElementById('model-type').value;
+            const epochs = document.getElementById('epochs').value;
+
+            if (!cryptoType) {
+                alert('Please select a cryptocurrency');
+                return;
+            }
+            if (!sentimentType) {
+                alert('Please select a sentiment data type');
+                return;
+            }
+            if (!modelType) {
+                alert('Please select a model type');
+                return;
+            }
+            if (!epochs && modelType !== 'ARIMA') {
+                alert('Please set training epochs');
+                return;
+            }
+
+            fetch('/start_training', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    crypto: cryptoType,
+                    sentiment_type: sentimentType,
+                    model_type: modelType,
+                    epochs: epochs
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === 'success') {
+                        document.getElementById('training-status').textContent =
+                            `Training ${cryptoType} (Sentiment Data: ${sentimentType}) with ${modelType} model...`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to start training');
+                });
+        });
+
+        document.getElementById('check-status').addEventListener('click', function () {
+            socket.emit('check_status');
+        });
+
+        socket.on('status_update', function (data) {
+            document.getElementById('training-status').textContent = data.message;
+            document.getElementById('start-training').disabled = data.is_training;
+        });
+
+        socket.on('model_info', (data) => {
+            document.getElementById('model-info').innerHTML =
+                `Model: ${data.model_name} | Parameters: ${data.dataset} | Total Epochs: ${data.total_epochs}`;
+            document.getElementById('epoch-info').textContent = `0/${data.total_epochs}`;
+        });
+
+        socket.on('update', (data) => {
+            document.getElementById('current-epoch').textContent = data.current_epoch;
+            document.getElementById('loss').textContent = data.loss.toFixed(6);
+            document.getElementById('val-loss').textContent = data.val_loss.toFixed(6);
+            document.getElementById('accuracy').textContent = data.accuracy.toFixed(6);
+            document.getElementById('progress').value = data.progress;
+            document.getElementById('progress-text').textContent = `${data.progress}%`;
+            document.getElementById('epoch-info').textContent = `${data.current_epoch}/${data.total_epochs}`;
+
+            lossChart.data.labels.push(data.current_epoch);
+            lossChart.data.datasets[0].data.push(data.loss);
+            lossChart.data.datasets[1].data.push(data.val_loss);
+            lossChart.update();
+
+            accuracyChart.data.labels.push(data.current_epoch);
+            accuracyChart.data.datasets[0].data.push(data.accuracy);
+            accuracyChart.data.datasets[1].data.push(data.val_accuracy);
+            accuracyChart.update();
+        });
+
+        socket.on('metric', (data) => {
+            const container = document.getElementById('metrics-container');
+            let metricElement = document.getElementById(`metric-${data.name}`);
+
+            if (!metricElement) {
+                metricElement = document.createElement('div');
+                metricElement.id = `metric-${data.name}`;
+                metricElement.className = 'metric-item';
+                metricElement.innerHTML = `<h4>${data.name}</h4><p>--</p>`;
+                container.appendChild(metricElement);
+            }
+
+            metricElement.querySelector('p').textContent = data.value.toFixed(6);
+        });
+
+        socket.on('log', (data) => {
+            const logsElement = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${data.message}`;
+            logsElement.appendChild(logEntry);
+            logsElement.scrollTop = logsElement.scrollHeight;
+        });
+
+        window.addEventListener('load', function () {
+            socket.emit('check_status');
+        });
+    </script>
+</div>
+</div>
+{% endblock %}

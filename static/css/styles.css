@@ -1,0 +1,48 @@
+body {
+    background-color: #f5f7fb;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.log-container {
+    height: 200px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.log-entry {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.log-timestamp {
+    color: #6c757d;
+    margin-right: 10px;
+}
+
+.progress {
+    margin-bottom: 20px;
+}
+
+#loss-chart {
+    height: 300px;
+}
+
+/* Control buttons styles */
+#start-btn, #pause-btn, #stop-btn {
+    min-width: 100px;
+}
+
+#control-feedback {
+    font-weight: bold;
+    transition: all 0.3s ease;
+}

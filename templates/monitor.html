@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Model Training Monitor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 20px;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            border: none;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            border-top-left-radius: 10px !important;
+            border-top-right-radius: 10px !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .log-container {
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            border: 1px solid #eee;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            line-height: 1.4;
+        }
+
+        .log-timestamp {
+            color: #6c757d;
+            margin-right: 10px;
+        }
+
+        .progress {
+            margin-bottom: 20px;
+            height: 30px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            font-weight: 500;
+            font-size: 1rem;
+            transition: width 0.5s ease;
+        }
+
+        #loss-chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        #loss-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn-control {
+            min-width: 120px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-3px);
+        }
+
+        .metrics-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+
+        .table thead th {
+            position: sticky;
+            top: 0;
+            background-color: #e9ecef;
+            z-index: 10;
+        }
+
+        .info-badge {
+            background-color: #e9ecef;
+            color: #212529;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color), #1a2530);
+            color: white;
+            padding: 30px 0 20px;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .status-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .metric-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        /* Fix progress bar animation */
+        .progress-bar.animated-gradient {
+            background: linear-gradient(90deg, #3498db, #2c78db, #2385c7) !important;
+            background-size: 300% 100% !important;
+            animation: gradient-animation 1.5s infinite;
+        }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @media (max-width: 992px) {
+            #loss-chart-container {
+                height: 250px;
+            }
+
+            .btn-control {
+                min-width: 100px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #loss-chart-container {
+                height: 200px;
+            }
+
+            .header-section {
+                padding-top: 60px;
+            }
+
+            .back-btn {
+                top: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="fw-bold mb-3">Cryptocurrency Model Training Monitor</h1>
+                    <p class="lead mb-0">Real-time monitoring of model training process, tracking changes in key parameters like accuracy, loss function, and validation metrics</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Home Button -->
+        <a href="/" class="back-btn btn btn-light">
+            <i class="bi bi-arrow-left"></i> Back to Home
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <!-- Status Overview Cards -->
+            <div class="col-md-12 mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="status-card text-center">
+                            <div class="metric-label">Cryptocurrency</div>
+                            <div id="crypto-name" class="metric-value">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="status-card text-center">
+                            <div class="metric-label">Model Type</div>
+                            <div id="model-type" class="metric-value">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="status-card text-center">
+                            <div class="metric-label">Training Epochs</div>
+                            <div id="epoch-progress" class="metric-value">0/0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="status-card text-center">
+                            <div class="metric-label">Training Duration</div>
+                            <div id="training-time" class="metric-value">00:00:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Main Panel -->
+            <div class="col-lg-8">
+                <!-- Training Progress Card -->
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span>Model Training Progress</span>
+                        <span class="info-badge">Real-time Monitoring</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress">
+                            <div id="training-progress" class="progress-bar progress-bar-striped progress-bar-animated animated-gradient"
+                                role="progressbar" style="width: 0%;"
+                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        </div>
+                        <div id="loss-chart-container">
+                            <canvas id="loss-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training Control Card -->
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Training Control</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <button id="start-btn" class="btn btn-success btn-control me-md-2">
+                                <i class="bi bi-play-fill"></i> Start/Resume
+                            </button>
+                            <button id="pause-btn" class="btn btn-warning btn-control me-md-2">
+                                <i class="bi bi-pause-fill"></i> Pause
+                            </button>
+                            <button id="stop-btn" class="btn btn-danger btn-control">
+                                <i class="bi bi-stop-fill"></i> Stop
+                            </button>
+                        </div>
+                        <div id="control-feedback" class="mt-3 text-center alert alert-info">
+                            Waiting for training to start...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="col-lg-4">
+                <!-- Training Metrics Card -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Training Metrics</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="metrics-table-container">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Model</th>
+                                        <th>Metric</th>
+                                        <th>Value</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="metrics-table">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">No data available</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training Logs Card -->
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Training Logs</h5>
+                    </div>
+                    <div class="card-body p-3">
+                        <div id="log-container" class="log-container">
+                            <div class="log-entry">
+                                <span class="log-timestamp">[00:00:00]</span>
+                                <span class="log-message">System ready, waiting for training to start...</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-timestamp">[00:00:00]</span>
+                                <span class="log-message">Connected to training monitoring service</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status Card -->
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">System Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="metric-label">Connection Status</span>
+                            <span id="connection-status" class="badge bg-success">Connected</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="metric-label">Last Updated</span>
+                            <span id="last-update">--:--:--</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="metric-label">Data Refresh Rate</span>
+                            <span>1 second</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // Initialize variables
+        let lossChart = null;
+        let startTime = new Date();
+        let trainingTimer = null;
+        let totalEpochs = 0;
+
+        // Establish SocketIO connection
+        const socket = io();
+
+        // Listen for model info updates
+        socket.on('model_info', function(data) {
+            document.getElementById('crypto-name').textContent = data.crypto;
+            document.getElementById('model-type').textContent = data.model;
+            document.getElementById('epoch-progress').textContent = `0/${data.total_epochs}`;
+
+            // Store total epochs for future use
+            totalEpochs = data.total_epochs;
+
+            // Start timer
+            startTimer();
+
+            // Update connection status
+            document.getElementById('last-update').textContent = new Date().toTimeString().substring(0, 8);
+        });
+
+        // Listen for training progress updates
+        socket.on('update', function(data) {
+            // Update progress bar
+            const progressBar = document.getElementById('training-progress');
+            progressBar.style.width = `${data.progress}%`;
+            progressBar.textContent = `${data.progress}%`;
+            progressBar.setAttribute('aria-valuenow', data.progress);
+
+            // Update epoch display
+            document.getElementById('epoch-progress').textContent =
+                `${data.current_epoch}/${totalEpochs}`;
+
+            // Update chart data
+            if (lossChart) {
+                // Check if data point for this epoch already exists
+                const existingIndex = lossChart.data.labels.indexOf(data.current_epoch);
+
+                if (existingIndex !== -1) {
+                    // Update existing data point
+                    lossChart.data.datasets[0].data[existingIndex] = data.loss;
+                    lossChart.data.datasets[1].data[existingIndex] = data.val_loss;
+                } else {
+                    // Add new data point
+                    lossChart.data.labels.push(data.current_epoch);
+                    lossChart.data.datasets[0].data.push(data.loss);
+                    lossChart.data.datasets[1].data.push(data.val_loss);
+
+                    // Limit to 20 data points
+                    if (lossChart.data.labels.length > 20) {
+                        lossChart.data.labels.shift();
+                        lossChart.data.datasets[0].data.shift();
+                        lossChart.data.datasets[1].data.shift();
+                    }
+                }
+                lossChart.update();
+            }
+
+            // Update last updated time
+            document.getElementById('last-update').textContent = new Date().toTimeString().substring(0, 8);
+        });
+
+        // Listen for metric updates
+        socket.on('metric', function(data) {
+            const tableBody = document.getElementById('metrics-table');
+            const now = new Date();
+            const timeString = now.toTimeString().substring(0, 8);
+
+            // Remove "no data" row
+            if (tableBody.rows.length === 1 && tableBody.rows[0].cells[0].colSpan === 4) {
+                tableBody.deleteRow(0);
+            }
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${data.model_name}</td>
+                <td>${data.name}</td>
+                <td>${data.value.toFixed(6)}</td>
+                <td>${timeString}</td>
+            `;
+
+            tableBody.appendChild(newRow);
+
+            // Auto-scroll to bottom
+            tableBody.parentElement.scrollTop = tableBody.parentElement.scrollHeight;
+        });
+
+        // Listen for log updates
+        socket.on('log', function(data) {
+            const logContainer = document.getElementById('log-container');
+            const now = new Date();
+            const timeString = now.toTimeString().substring(0, 8);
+
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-timestamp">[${timeString}]</span>
+                <span class="log-message">${data.message}</span>
+            `;
+
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        });
+
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('loss-chart').getContext('2d');
+            lossChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Training Loss',
+                            data: [],
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointBackgroundColor: 'rgb(255, 99, 132)',
+                            tension: 0.2,
+                            fill: true
+                        },
+                        {
+                            label: 'Validation Loss',
+                            data: [],
+                            borderColor: 'rgb(54, 162, 235)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointBackgroundColor: 'rgb(54, 162, 235)',
+                            tension: 0.2,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 15,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Loss Value',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Training Epochs',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 300
+                    }
+                }
+            });
+        }
+
+        // Start timer
+        function startTimer() {
+            clearInterval(trainingTimer);
+            startTime = new Date();
+
+            trainingTimer = setInterval(() => {
+                const now = new Date();
+                const diff = Math.floor((now - startTime) / 1000);
+                const hours = Math.floor(diff / 3600);
+                const minutes = Math.floor((diff % 3600) / 60);
+                const seconds = diff % 60;
+
+                document.getElementById('training-time').textContent =
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Initialize chart on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+
+            // Simulate connection success
+            setTimeout(() => {
+                document.getElementById('log-container').innerHTML +=
+                    '<div class="log-entry"><span class="log-timestamp">[00:00:03]</span><span class="log-message">Successfully connected to training service</span></div>';
+            }, 3000);
+
+            // Demo progress animation
+            let demoProgress = 0;
+            const demoInterval = setInterval(() => {
+                demoProgress += 5;
+                if (demoProgress > 100) {
+                    clearInterval(demoInterval);
+                    return;
+                }
+
+                const progressBar = document.getElementById('training-progress');
+                progressBar.style.width = `${demoProgress}%`;
+                progressBar.textContent = `${demoProgress}%`;
+            }, 500);
+        });
+
+        // Training control functions
+        document.getElementById('start-btn').addEventListener('click', function() {
+            fetch('/control/start')
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('control-feedback');
+                    feedback.className = 'mt-3 text-center alert alert-success';
+                    feedback.textContent = data.message;
+
+                    // Add log
+                    const logContainer = document.getElementById('log-container');
+                    const now = new Date();
+                    const timeString = now.toTimeString().substring(0, 8);
+                    logContainer.innerHTML +=
+                        `<div class="log-entry"><span class="log-timestamp">[${timeString}]</span><span class="log-message">${data.message}</span></div>`;
+                });
+        });
+
+        document.getElementById('pause-btn').addEventListener('click', function() {
+            fetch('/control/pause')
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('control-feedback');
+                    feedback.className = 'mt-3 text-center alert alert-warning';
+                    feedback.textContent = data.message;
+
+                    // Add log
+                    const logContainer = document.getElementById('log-container');
+                    const now = new Date();
+                    const timeString = now.toTimeString().substring(0, 8);
+                    logContainer.innerHTML +=
+                        `<div class="log-entry"><span class="log-timestamp">[${timeString}]</span><span class="log-message">${data.message}</span></div>`;
+                });
+        });
+
+        document.getElementById('stop-btn').addEventListener('click', function() {
+            fetch('/control/stop')
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('control-feedback');
+                    feedback.className = 'mt-3 text-center alert alert-danger';
+                    feedback.textContent = data.message;
+
+                    // Add log
+                    const logContainer = document.getElementById('log-container');
+                    const now = new Date();
+                    const timeString = now.toTimeString().substring(0, 8);
+                    logContainer.innerHTML +=
+                        `<div class="log-entry"><span class="log-timestamp">[${timeString}]</span><span class="log-message">${data.message}</span></div>`;
+
+                    // Stop timer
+                    clearInterval(trainingTimer);
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Analytics Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar-dark {
+            background: linear-gradient(135deg, var(--primary-color), #1a2530);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0.8rem 1rem;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem;
+            margin: 0 0.25rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .nav-link:hover::before, .nav-link.active::before {
+            width: 80%;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--secondary-color), #2c78db);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .logo i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .brand-text {
+            color: white;
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-text span {
+            color: var(--secondary-color);
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(26, 37, 48, 0.95)),
+                        url('/static/Home.avif');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 8rem 0;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+
+        .page-section {
+            padding: 2rem;
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .page-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .section-description {
+            color: #555;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .btn-primary {
+            background: var(--secondary-color);
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2385c7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .preview-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .preview-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .preview-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 1.5rem 1rem 1rem;
+            color: white;
+        }
+
+        footer {
+            background: var(--primary-color);
+            color: rgba(255,255,255,0.7);
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <div class="brand-area">
+                <div class="logo">
+                    <i class="bi bi-currency-bitcoin"></i>
+                </div>
+                <div class="brand-text">Crypto<span>Analytics</span></div>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="bi bi-house-door"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/model-monitor">
+                            <i class="bi bi-graph-up-arrow"></i>Model Analysis - Macro
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/macro-correlation">
+                            <i class="bi bi-pie-chart"></i>Macro Indicators Correlation
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/future-prediction">
+                            <i class="bi bi-arrow-up-right-circle"></i>Future Price Prediction
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/model-visualization">
+                            <i class="bi bi-bar-chart-line"></i>Model Visualization
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sentiment-monitor">
+                            <i class="bi bi-emoji-smile"></i>Model Analysis - Sentiment
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Homepage Content -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Cryptocurrency Analytics Platform</h1>
+            <p class="hero-subtitle">Utilizing macro indicators and market sentiment to build advanced models for accurate cryptocurrency price predictions</p>
+            <a href="#features" class="btn btn-primary btn-lg">Explore Platform Features</a>
+        </div>
+    </div>
+
+    <div class="container" id="features">
+        <h2 class="text-center mb-5" style="color: var(--primary-color);">Core Platform Features</h2>
+
+        <div class="card-grid">
+            <!-- Model Analysis - Macro -->
+            <div class="page-section">
+                <div class="preview-image">
+                    <img src="/static/1.avif" alt="Macro model analysis visualization">
+                    <div class="preview-overlay">Model Analysis - Macro</div>
+                </div>
+                <div class="section-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <h3 class="section-title">Model Analysis - Macro</h3>
+                <p class="section-description">
+                    Real-time monitoring of model training based on macroeconomic indicators (Federal Reserve rates, Treasury yields, USD index, etc.), tracking key parameters like accuracy, loss function, and validation metrics.
+                </p>
+                <a href="/model-monitor" class="btn btn-primary">View Real-time Monitoring - Macro</a>
+            </div>
+
+            <!-- Macro Indicators Correlation -->
+            <div class="page-section">
+                <div class="preview-image">
+                    <img src="/static/2.avif" alt="Macro indicators correlation chart">
+                    <div class="preview-overlay">Macro Indicators Correlation</div>
+                </div>
+                <div class="section-icon">
+                    <i class="bi bi-pie-chart"></i>
+                </div>
+                <h3 class="section-title">Macro Indicators Correlation</h3>
+                <p class="section-description">
+                    Analyze the correlation between macro indicators (Federal Reserve rates, Treasury yields, USD index, VIX fear index) and cryptocurrency prices to identify key influencing factors.
+                </p>
+                <a href="/macro-correlation" class="btn btn-primary">Run Correlation Analysis</a>
+            </div>
+
+            <!-- Future Price Prediction -->
+            <div class="page-section">
+                <div class="preview-image">
+                    <img src="/static/3.avif" alt="Cryptocurrency price prediction graph">
+                    <div class="preview-overlay">Future Price Prediction</div>
+                </div>
+                <div class="section-icon">
+                    <i class="bi bi-arrow-up-right-circle"></i>
+                </div>
+                <h3 class="section-title">Future Price Prediction</h3>
+                <p class="section-description">
+                    Predict future cryptocurrency price trends using advanced machine learning models based on historical data and macro indicators, providing short-term and medium-term forecasts.
+                </p>
+                <a href="/future-prediction" class="btn btn-primary">View Future Prices</a>
+            </div>
+
+            <!-- Model Visualization -->
+            <div class="page-section">
+                <div class="preview-image">
+                    <img src="/static/4.avif" alt="Model performance visualization">
+                    <div class="preview-overlay">Model Visualization</div>
+                </div>
+                <div class="section-icon">
+                    <i class="bi bi-bar-chart-line"></i>
+                </div>
+                <h3 class="section-title">Model Visualization</h3>
+                <p class="section-description">
+                    Visualize the performance of various models, including prediction result comparisons, error analysis, feature importance, etc., to help understand model behavior and select the optimal model.
+                </p>
+                <a href="/model-visualization" class="btn btn-primary">View Model Visualizations</a>
+            </div>
+
+            <!-- Model Analysis - Sentiment -->
+            <div class="page-section">
+                <div class="preview-image">
+                    <img src="/static/5.avif" alt="Social media sentiment analysis">
+                    <div class="preview-overlay">Model Analysis - Sentiment</div>
+                </div>
+                <div class="section-icon">
+                    <i class="bi bi-emoji-smile"></i>
+                </div>
+                <h3 class="section-title">Model Analysis - Sentiment</h3>
+                <p class="section-description">
+                    Train models using social media sentiment data, monitor the training process in real-time, and analyze the impact of sentiment factors on cryptocurrency prices.
+                </p>
+                <a href="/sentiment-monitor" class="btn btn-primary">View Real-time Monitoring - Sentiment</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container text-center">
+            <p class="mb-3">Cryptocurrency Analytics Platform © 2025 | Advanced Predictive Models & Market Analysis</p>
+            <div class="mb-2">
+                <a href="#" class="text-white me-3"><i class="bi bi-github"></i></a>
+                <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+            </div>
+            <small>Data Sources: Federal Reserve, U.S. Treasury, CBOE, CoinMarketCap, Social Media APIs</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set current active navigation link
+        document.addEventListener('DOMContentLoaded', function() {
+            const path = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === path) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Smooth scrolling effect
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

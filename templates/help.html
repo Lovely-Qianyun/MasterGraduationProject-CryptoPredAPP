@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}User Guide - Cryptocurrency Analytics Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <header class="header">
+        <h1><i class="fas fa-question-circle"></i> User Guide</h1>
+        <p>How to use the Cryptocurrency Price Prediction System</p>
+        <div style="margin-top: 15px;">
+            <a href="/future-prediction" style="color: #3498db; text-decoration: none; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> Back to Prediction
+            </a>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="card">
+            <h2><i class="fas fa-book"></i> Getting Started</h2>
+
+            <h3>Step 1: Select Cryptocurrency</h3>
+            <p>Choose from the available cryptocurrencies:</p>
+            <ul>
+                <li><strong>Bitcoin</strong> - The original and most popular cryptocurrency</li>
+                <li><strong>Ethereum</strong> - Platform for smart contracts and DApps</li>
+                <li><strong>Litecoin</strong> - Fast and low-cost digital currency</li>
+                <li><strong>Dogecoin</strong> - Community-driven meme coin</li>
+            </ul>
+
+            <h3>Step 2: Choose Prediction Model</h3>
+            <p>Select from our advanced machine learning models:</p>
+            <ul>
+                <li><strong>CNN (Convolutional Neural Network)</strong> - Good for pattern recognition in price data
+                </li>
+                <li><strong>ConvLSTM</strong> - Combines CNN and LSTM for spatiotemporal patterns</li>
+                <li><strong>EDLSTM (Encoder-Decoder LSTM)</strong> - Sequence-to-sequence learning for time series
+                </li>
+                <li><strong>Transformer</strong> - State-of-the-art attention mechanism for long-term dependencies
+                </li>
+            </ul>
+
+            <h3>Step 3: Set Prediction Period</h3>
+            <p>Choose how many days ahead you want to predict:</p>
+            <ul>
+                <li><strong>7 days</strong> - Short-term predictions with higher accuracy</li>
+                <li><strong>15 days</strong> - Medium-term forecasting</li>
+                <li><strong>30 days</strong> - Long-term trend analysis</li>
+            </ul>
+
+            <h3>Understanding Results</h3>
+            <p>The prediction results include:</p>
+            <ul>
+                <li><strong>Historical Prices</strong> - Blue line showing past 30 days</li>
+                <li><strong>Predicted Prices</strong> - Red dashed line showing future predictions</li>
+                <li><strong>Price Summary</strong> - Detailed prices for the first few predicted days</li>
+            </ul>
+
+            <h3>Important Notes</h3>
+            <div class="warning-box"
+                style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <i class="fas fa-exclamation-triangle" style="color: #f39c12;"></i>
+                <strong>Disclaimer:</strong> These predictions are for educational purposes only.
+                Cryptocurrency markets are highly volatile and unpredictable.
+                Do not use these predictions for actual trading decisions.
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
